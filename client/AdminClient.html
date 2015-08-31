@@ -1,0 +1,15 @@
+<head>
+  <meta charset="UTF-8">
+  <title>Sensor Administration</title>
+</head>
+<body>
+    {{#if currentUser}}
+        {{>admin}}
+    {{else}}
+        {{#if loggingIn}}
+            Logging in...
+        {{else}}
+            {{>login}}
+        {{/if}}
+    {{/if}}
+</body>

@@ -1,0 +1,22 @@
+.loginBox {
+    margin: auto;
+    width: 100px;
+    height: 100px;
+    border: 2px black;
+    position: relative;
+}
+
+.sensorBox {
+    border: inset medium;
+    width: 100%;
+}
+
+.loginButton {
+    width: 100%;
+    margin: auto;
+}
+
+.dataTable {
+    table-layout: fixed;
+    width: 100%;
+}

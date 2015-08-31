@@ -1,0 +1,19 @@
+<template name="login">
+    <div class="loginBox">
+        {{#if firstLogin}}
+            <form class="createUser">
+                <input name="username" type="text" placeholder="Username">
+                <input name="firstPassword" type="password" placeholder="Password">
+                <input name="repeatPassword" type="password" placeholder="Repeat Password">
+                <input type="submit" value="Create User" class="loginButton">
+            </form>
+        {{else}}
+            <form class="login">
+                <input name="username" type="text" placeholder="Username">
+                <input name="password" type="password" placeholder="Password">
+                <input type="submit" value="Login" class="loginButton">
+            </form>
+        {{/if}}
+        <p>{{errorText}}</p>
+    </div>
+</template>

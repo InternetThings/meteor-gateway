@@ -1,0 +1,44 @@
+<template name="admin">
+    <p><button class="logout">Log Out</button>Add new sensor</p>
+    <form class="addSensor">
+        <input type="text" name="location" placeholder="Location">
+        <input class="type" type="radio" name="type" value="Temperature" checked> Temperature
+        <input class="type" type="radio" name="type" value="Proximity"> Proximity
+        <input class="type" type="radio" name="type" value="Toggle"> Toggle
+        <input type="submit" value="Add">
+    </form>
+    <br>
+    <table>
+    <tr>
+    {{#each sensors}}
+        <td>
+            <div class="sensorBox">
+                <p>Location: {{location}}</p>
+                <p>Type: {{type}}</p>
+                <p><input type="checkbox" class="sensorCheckbox" checked="checked"></p>
+            </div>
+        </td>
+    {{/each}}
+    </tr>
+    </table>
+    <br>
+    <form>
+        <p>From: <input type="date" class="dateInput" name="fromDate" placeholder="yyyy-mm-dd"> To: <input type="date" class="dateInput" name="toDate" placeholder="yyyy-mm-dd"></p>
+    </form>
+    <table class="dataTable">
+        <tr>
+            <th>Date</th>
+            <th>Sensor</th>
+            <th>Data</th>
+        </tr>
+        {{#each sensorData}}
+            {{#each sortedData data}}
+                <tr>
+                    <td>{{dateFromTime date}}</td>
+                    <td>{{sensorName sensorId}}</td>
+                    <td>{{data}}</td>
+                </tr>
+            {{/each}}
+        {{/each}}
+    </table>
+</template>
