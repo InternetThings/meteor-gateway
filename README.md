@@ -31,6 +31,6 @@
 * * To set up the raspberry so it will automatically run the server whenever it is started you have to edit the /etc/rc.local file. Simply add the line "sudo ./meteor_run.sh -d path -n SensorGateway" below the initial comments, path is the path to your project directory. 
 
 
-### Who do I talk to? ###
+### Contact ###
 
 * For further instructions contact ncfjakobsen@me.com
