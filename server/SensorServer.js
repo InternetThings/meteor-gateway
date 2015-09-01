@@ -1,6 +1,16 @@
 /**
  * Created by Niels on 25/08/15.
  */
+var mqtt = Meteor.npmRequire('mqtt');
+var client = client = mqtt.connect('mqtt://localhost');
+
+function publishData(data) {
+    console.log('Published data');
+    var sensorName = Sensors.findOne({_id:data.sensorId}).location;
+    var message = 'Readiing @' + new Date(data.date).toUTCString() + " = " + data.data;
+    client.publish('sensors/' + sensorName, message);
+}
+
 Meteor.startup(function() {
     //No particular setup on startup
 });
@@ -15,6 +25,7 @@ Meteor.publish('sensors', function() {
     }
 });
 
+/*
 //Publish sensor data for logged in users, based on their search criteria
 Meteor.publish('sensorData', function(from, to, sensors) {
     if(this.userId) {
@@ -76,6 +87,7 @@ Meteor.publish('sensorData', function(from, to, sensors) {
     //Notify subscriber that subscription is ready
     self.ready();
 });
+*/
 
 //Public functions
 Meteor.methods({
@@ -122,5 +134,6 @@ Meteor.methods({
             }
             SensorData.insert({start: data.date, end: undefined, currentIndex: 0, data: dataArray});
         }
+        publishData(data);
     }
 });
