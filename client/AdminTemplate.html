@@ -9,36 +9,15 @@
     </form>
     <br>
     <table>
-    <tr>
-    {{#each sensors}}
-        <td>
-            <div class="sensorBox">
-                <p>Location: {{location}}</p>
-                <p>Type: {{type}}</p>
-                <p><input type="checkbox" class="sensorCheckbox" checked="checked"></p>
-            </div>
-        </td>
-    {{/each}}
-    </tr>
-    </table>
-    <br>
-    <form>
-        <p>From: <input type="date" class="dateInput" name="fromDate" placeholder="yyyy-mm-dd"> To: <input type="date" class="dateInput" name="toDate" placeholder="yyyy-mm-dd"></p>
-    </form>
-    <table class="dataTable">
         <tr>
-            <th>Date</th>
-            <th>Sensor</th>
-            <th>Data</th>
-        </tr>
-        {{#each sensorData}}
-            {{#each sortedData data}}
-                <tr>
-                    <td>{{dateFromTime date}}</td>
-                    <td>{{sensorName sensorId}}</td>
-                    <td>{{data}}</td>
-                </tr>
-            {{/each}}
+        {{#each sensors}}
+            <td>
+                <div class="sensorBox">
+                    <p>Location: {{location}}</p>
+                    <p>Type: {{type}}</p>
+                </div>
+            </td>
         {{/each}}
+        </tr>
     </table>
 </template>
