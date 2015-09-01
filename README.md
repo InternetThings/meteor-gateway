@@ -25,7 +25,7 @@
 
 * Database configuration
 * * The database will be configured by the script and code itself. 
-* * Slight note on [database design](http://design).
+* * Concerning database design. The database is built on the idea of timeseries design. It contains a collection of sensors and a collection of sensordata. Sensors contains one document per sensor describing that particular sensor. SensorData contains one document per 100 data points received. The top of each document marks the start time, end time (undefined until document is filled) and the current index marking how far the data array has been filled. The data array is allocated at document creation to reduce disk writing. 
 
 * Setting up execution on raspberry startup
 * * To set up the raspberry so it will automatically run the server whenever it is started you have to edit the /etc/rc.local file. Simply add the line "sudo ./meteor_run.sh -d path -n SensorGateway" below the initial comments, path is the path to your project directory. 
@@ -33,4 +33,4 @@
 
 ### Contact ###
 
-* For further instructions contact ncfjakobsen@me.com
+* For further instructions contact Niels Jakobsen @ ncfjakobsen@me.com
