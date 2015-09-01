@@ -2,9 +2,10 @@
  * Created by Niels on 25/08/15.
  */
 Meteor.startup(function() {
-
+    //No particular setup on startup
 });
 
+//Publish the sensors collection to all logged in users
 Meteor.publish('sensors', function() {
     if(this.userId) {
         return Sensors.find();
@@ -14,8 +15,10 @@ Meteor.publish('sensors', function() {
     }
 });
 
+//Publish sensor data for logged in users, based on their search criteria
 Meteor.publish('sensorData', function(from, to, sensors) {
     if(this.userId) {
+        //Function for filtering sensor data based on search criteria
         var transform = function (data) {
             if (to !== null) {
                 var index = 0;
@@ -51,6 +54,7 @@ Meteor.publish('sensorData', function(from, to, sensors) {
 
         var self = this;
 
+        //Set up observer with the transform function
         var observer = SensorData.find({start: {$gte: from.getTime()}}).observe({
             added: function (data) {
                 self.added('sensorData', data._id, transform(data));
@@ -63,15 +67,19 @@ Meteor.publish('sensorData', function(from, to, sensors) {
             }
         });
 
+        //Stop observer when subscription is cancelled
         self.onStop(function () {
             observer.stop()
         });
     }
 
+    //Notify subscriber that subscription is ready
     self.ready();
 });
 
+//Public functions
 Meteor.methods({
+    //Create a new sensor of a specific type
     addSensor:function(location, type) {
         check(location, String);
         check(type, String);
@@ -81,14 +89,17 @@ Meteor.methods({
 
     },
 
+    //Function to check wether an admin user has been created
     firstLogin:function(id) {
         return Meteor.users.find().count() === 0;
     },
 
+    //Temporary function for getting all sensor ids, will be removed for final product
     getIds:function() {
         return Sensors.find({}, {fields: {type: 1}}).fetch();
     },
 
+    //Temporary function for adding data to sensor, will be removed for final product
     addData:function(data) {
         var currentData = SensorData.findOne({end: undefined});
         if (currentData !== undefined) {
