@@ -21,7 +21,7 @@
 * * On the first config make sure to expand the filesystem, enabling ssh might be a good idea as you will need to transfer files from your computer to the raspberry pi.
 * * Next you need to install node, npm and mongodb. This is done via this script //link to script goes here//
 * * Just move the script to your raspberry pi, make it executable with chmod +x ./meteor_installer.sh and run it by invoking the filepath. The install will take a couple of minutes.
-* * Next step is to move the built project from your computer to the raspberry, to run the project all you need to is then use the [meteor_run.sh](/source/scripts/meteor_run.sh) script to run it. Keep in mind that the -d and -n options must be set, with -d being the path to the zipped project and -n being the name of the project, in this case it will be SensorGateway. On the first run the script will first setup your project which will take a bit of time, on each successive run it will be much faster.
+* * Next step is to move the built project from your computer to the raspberry, to run the project all you need to is then use the [meteor_run.sh](https://niljak@bitbucket.org/dt_eaaa_h2_2015/meteor-gateway.git/source/scripts/meteor_run.sh) script to run it. Keep in mind that the -d and -n options must be set, with -d being the path to the zipped project and -n being the name of the project, in this case it will be SensorGateway. On the first run the script will first setup your project which will take a bit of time, on each successive run it will be much faster.
 
 * Database configuration
 * * The database will be configured by the script and code itself. 
