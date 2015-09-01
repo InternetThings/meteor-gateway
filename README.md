@@ -23,13 +23,12 @@
 * * Just move the script to your raspberry pi, make it executable with chmod +x ./meteor_installer.sh and run it by invoking the filepath. The install will take a couple of minutes.
 * * Next step is to move the built project from your computer to the raspberry, to run the project all you need to is then use the [meteor_run.sh](http://script) script to run it. Keep in mind that the -d and -n options must be set, with -d being the path to the zipped project and -n being the name of the project, in this case it will be SensorGateway. On the first run the script will first setup your project which will take a bit of time, on each successive run it will be much faster.
 
-
 * Database configuration
 * * The database will be configured by the script and code itself. 
 * * Slight note on [database design](http://design).
 
 * Setting up execution on raspberry startup
-* * To set up the raspberry so it will automatically run the server whenever it is started you have to edit the /etc/rc.local file. Simply 
+* * To set up the raspberry so it will automatically run the server whenever it is started you have to edit the /etc/rc.local file. Simply add the line "sudo ./meteor_run.sh -d path -n SensorGateway" below the initial comments, path is the path to your project directory. 
 
 
 ### Who do I talk to? ###
