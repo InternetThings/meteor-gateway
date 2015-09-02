@@ -54,12 +54,20 @@ Template.login.helpers({
 
 Template.admin.onCreated(function() {
     var instance = this;
+
     instance.subscribe('sensors');
+    Session.set('checkedSensors', []);
+    Session.setDefault('selected', 'Temperature');
+    Session.setDefault('fromDate', new Date(0));
+    Session.setDefault('toDate', undefined);
+    instance.autorun(function () {
+        instance.subscribe('sensorData', Session.get('fromDate'), Session.get('toDate'), Session.get('checkedSensors'));
+    });
 });
 
 Template.admin.events({
     'click .logout':function() {
-       Meteor.logout();
+        Meteor.logout();
     },
 
     'submit .addSensor':function(event) {
@@ -75,11 +83,72 @@ Template.admin.events({
             Meteor.call('addSensor', event.target.location.value, type);
             event.target.location.value = "";
         }
+    },
+
+    'keyup .dateInput':function(event) {
+        var date = new Date(event.target.value);
+        if(!isNaN(date.getTime())) {
+            Session.set(event.target.name, date);
+        }
+        else if(event.target.value === '') {
+            if(event.target.name === 'toDate') {
+                Session.set(event.target.name, undefined);
+            }
+            else {
+                Session.set(event.target.name, new Date(0));
+            }
+        }
+    },
+
+    'click .sensorCheckbox':function(event) {
+        var array = Session.get('checkedSensors');
+        if(event.target.checked) {
+            if(array.indexOf(this._id) === -1) {
+                array.push(this._id);
+                Session.set('checkedSensors', array);
+            }
+        }
+        else {
+            var index = array.indexOf(this._id);
+            if(index !== -1) {
+                array.splice(index, 1);
+                Session.set('checkedSensors', array);
+            }
+        }
     }
 });
 
 Template.admin.helpers({
     sensors:function() {
         return Sensors.find();
+    },
+    sensorData:function() {
+        return SensorData.find({}, {sort:{start:-1}});
+    },
+
+    sortedData:function(data) {
+        try {
+            return data.sort(function (a, b) {
+                return b.date - a.date;
+            });
+        }
+        catch(error) {
+            console.log(error)
+        }
+    },
+
+    sensorName:function(id) {
+        try {
+            return Sensors.findOne({_id: id}).location;
+        }
+        catch(exception) {
+            console.log(exception);
+        }
+    },
+
+    dateFromTime:function(time) {
+        var date = new Date();
+        date.setTime(time);
+        return date.toUTCString();
     }
 });

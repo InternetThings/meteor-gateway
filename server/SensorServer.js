@@ -5,7 +5,6 @@ var mqtt = Meteor.npmRequire('mqtt');
 var client = client = mqtt.connect('mqtt://localhost');
 
 function publishData(data) {
-    console.log('Published data');
     var sensorName = Sensors.findOne({_id:data.sensorId}).location;
     var message = 'Readiing @' + new Date(data.date).toUTCString() + " = " + data.data;
     client.publish('sensors/' + sensorName, message);
@@ -23,6 +22,68 @@ Meteor.publish('sensors', function() {
     else {
         this.ready();
     }
+});
+
+//Publish sensor data for logged in users, based on their search criteria
+Meteor.publish('sensorData', function(from, to, sensors) {
+    if(this.userId) {
+        //Function for filtering sensor data based on search criteria
+        var transform = function (data) {
+            if (to !== null) {
+                var index = 0;
+                var dataArray = [];
+                while (index < data.currentIndex && data.data[index].date <= to.getTime()) {
+                    if(sensors !== null) {
+                        if (sensors.indexOf(data.data[index].sensorId) !== -1) {
+                            dataArray.push(data.data[index]);
+                        }
+                    }
+                    else {
+                        dataArray.push(data.data[index]);
+                    }
+                    index++;
+                }
+                data.data = dataArray;
+            }
+            else {
+                var index = 0;
+                var array = [];
+                while(index < data.data.length) {
+                    if(sensors !== null) {
+                        if (sensors.indexOf(data.data[index].sensorId) !== -1) {
+                            array.push(data.data[index]);
+                        }
+                    }
+                    index++;
+                }
+                data.data = array;
+            }
+            return data;
+        };
+
+        var self = this;
+
+        //Set up observer with the transform function
+        var observer = SensorData.find({start: {$gte: from.getTime()}}).observe({
+            added: function (data) {
+                self.added('sensorData', data._id, transform(data));
+            },
+            changed: function (newData, oldData) {
+                self.changed('sensorData', oldData._id, transform(newData));
+            },
+            removed: function (oldData) {
+                self.removed('sensorData', oldData._id);
+            }
+        });
+
+        //Stop observer when subscription is cancelled
+        self.onStop(function () {
+            observer.stop()
+        });
+    }
+
+    //Notify subscriber that subscription is ready
+    self.ready();
 });
 
 //Public functions

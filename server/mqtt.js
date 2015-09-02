@@ -26,7 +26,7 @@ server.on('clientConnected', function(client) {
 });
 
 server.on('published', function(packet, client) {
-   //console.log('Published', packet.topic);
+   console.log('Published', packet.topic);
 });
 
 server.on('ready', setup);
