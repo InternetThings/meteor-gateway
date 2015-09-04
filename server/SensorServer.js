@@ -1,14 +1,6 @@
 /**
  * Created by Niels on 25/08/15.
  */
-var mqtt = Meteor.npmRequire('mqtt');
-var client = client = mqtt.connect('mqtt://localhost');
-
-function publishData(data) {
-    var sensorName = Sensors.findOne({_id:data.sensorId}).location;
-    var message = 'Readiing @' + new Date(data.date).toUTCString() + " = " + data.data;
-    client.publish('sensors/' + sensorName, message);
-}
 
 Meteor.startup(function() {
     //No particular setup on startup
@@ -129,8 +121,7 @@ Meteor.methods({
             for (var i = 0; i < 99; i++) {
                 dataArray.push({date: undefined, sensorId: undefined, data: undefined});
             }
-            SensorData.insert({start: data.date, end: undefined, currentIndex: 0, data: dataArray});
+            SensorData.insert({start: data.date, end: undefined, currentIndex: 1, data: dataArray});
         }
-        publishData(data);
     }
 });
