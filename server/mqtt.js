@@ -1,7 +1,7 @@
 /**
  * Created by Niels on 01/09/15.
  */
-//Array of all topics, format is {topics:[{topic:String, subscribers:Number}], regex:RegExp, function:Function}
+//Array of all versions, format is {versions:[{topic:String, subscribers:Number}], regex:RegExp, function:Function}
 Topics = [];
 
 //Observer variable, used for saving mongoDB observer
@@ -43,7 +43,7 @@ server.on('subscribed', Meteor.bindEnvironment(function(topic, client) {
     var index = topicIndex(topic);
     if(match !== null && match[0] === topic) {
         if(index.outer === -1) {
-            Topics.push({topics: [{topic:topic, subscribers:1}], regex: topicRegex(topic), function: parseTopic(topic)});
+            Topics.push({versions: [{topic:topic, subscribers:1}], regex: topicRegex(topic), function: parseTopic(topic)});
             console.log('Topic created');
             //Start observer if it's not running
             if (observer === undefined) {
@@ -52,26 +52,26 @@ server.on('subscribed', Meteor.bindEnvironment(function(topic, client) {
             }
         }
         else if(index.inner === -1) {
-            Topics[index.outer].topics.push({topic:topic, subscribers:1});
+            Topics[index.outer].versions.push({topic:topic, subscribers:1});
         }
         else {
-            Topics[index.outer].topics[index.inner].subscribers++;
+            Topics[index.outer].versions[index.inner].subscribers++;
         }
     }
 }));
 
-//Unsubscribe from the topic, if there are not subscribers left, remove the topic from the topics array
+//Unsubscribe from the topic, if there are not subscribers left, remove the topic from the versions array
 server.on('unsubscribed', function(topic ,client) {
     console.log('Unsubscribed', topic);
     var index = topicIndex(topic);
     if(index.inner !== -1) {
-        Topics[index.outer].topics[index.inner].subscribers--;
-        if(Topics[index.outer].topics[index.inner].subscribers === 0) {
-            Topics[index.outer].topics.splice(index.inner, 1)
+        Topics[index.outer].versions[index.inner].subscribers--;
+        if(Topics[index.outer].versions[index.inner].subscribers === 0) {
+            Topics[index.outer].versions.splice(index.inner, 1)
         }
-        if(Topics[index.outer].topics.length === 0) {
+        if(Topics[index.outer].versions.length === 0) {
             Topics.splice(index.outer, 1);
-            console.log('There are now ' + Topics.length + ' topics');
+            console.log('There are now ' + Topics.length + ' versions');
         }
     }
 });
@@ -92,8 +92,8 @@ function topicIndex(topic) {
     while(!outerFound && i < Topics.length) {
         if(topic.match(Topics[i].regex) !== null) {
             outerFound = true;
-            while(!innerFound && j < Topics[i].topics.length) {
-                if(Topics[i].topics[j].topic === topic) {
+            while(!innerFound && j < Topics[i].versions.length) {
+                if(Topics[i].versions[j].topic === topic) {
                     innerFound = true;
                 }
                 else {
@@ -211,7 +211,7 @@ function parseTopic(topic) {
     return topicFunction;
 }
 
-//Start observer and assign it to the observer variable, observer checks new data and publishes it to the relevant topics
+//Start observer and assign it to the observer variable, observer checks new data and publishes it to the relevant versions
 function startObserver() {
     //Initializing variable, makes sure initial load is not published
     var initializing = true;
@@ -225,9 +225,9 @@ function startObserver() {
                 var data = fields.data[fields.currentIndex-1];
                 for (var i = 0; i < Topics.length; i++) {
                     if (Topics[i].function(data)) {
-                        for(var j = 0; j < Topics[i].topics.length; j++) {
+                        for(var j = 0; j < Topics[i].versions.length; j++) {
                             var message = {
-                                topic: Topics[i].topics[j].topic,
+                                topic: Topics[i].versions[j].topic,
                                 payload: "Registrered reading of " + data.data,
                                 qos: 0,
                                 retain: false
@@ -250,9 +250,9 @@ function startObserver() {
                 var data = fields.data[fields.currentIndex - 1];
                 for (var i = 0; i < Topics.length; i++) {
                     if (Topics[i].function(data)) {
-                        for(var j = 0; j < Topics[i].topics.length; j++) {
+                        for(var j = 0; j < Topics[i].versions.length; j++) {
                             var message = {
-                                topic: Topics[i].topics[j].topic,
+                                topic: Topics[i].versions[j].topic,
                                 payload: 'Registrered reading @' + data.sensorId + ' of ' + data.data,
                                 qos: 0,
                                 retain: false
