@@ -29,14 +29,6 @@ var settings = {
 
 var server = new mosca.Server(settings);
 
-server.on('clientConnected', function(client) {
-   //console.log('client connected', client.id);
-});
-
-server.on('published', function(packet, client) {
-   //console.log('Published', packet);
-});
-
 server.on('subscribed', Meteor.bindEnvironment(function(topic, client) {
     console.log('Subscribed', topic);
     var match = topic.match(pattern);
@@ -109,10 +101,8 @@ function parseTopic(topic) {
     console.log(sensorIds);
     var topicFunction = function (data) {
         var matches = false;
-        console.log('Function called with data: ' + data.sensorId);
         if(sensorIds.length === 0 || sensorIds.indexOf(data.sensorId) !== -1) {
-            var matches = true;
-            console.log('Matches strings');
+            matches = true;
             if(expressions !== null) {
                 for (var i = 0; i < expressions.length; i++) {
                     switch (expressions[i][0]) {
@@ -139,9 +129,13 @@ function parseTopic(topic) {
 
 function startObserver() {
     var initializing = true;
-    observer = SensorData.find().observeChanges({
+    observer = SensorData.find({}, {fields:{currentIndex:1, data:1}}).observeChanges({
         added: function (id, fields) {
             if(!initializing) {
+                if(Topics.length === 0) {
+                    observer.stop();
+                    observer = undefined;
+                }
                 var data = fields.data[fields.currentIndex-1];
                 for (var i = 0; i < Topics.length; i++) {
                     if (Topics[i].function(data)) {
@@ -160,8 +154,12 @@ function startObserver() {
         },
 
         changed: function(id, fields) {
-            if(!initializing) {
-                var data = fields.data[fields.currentIndex-1];
+            if (!initializing) {
+                if (Topics.length === 0) {
+                    observer.stop();
+                    observer = undefined;
+                }
+                var data = fields.data[fields.currentIndex - 1];
                 for (var i = 0; i < Topics.length; i++) {
                     if (Topics[i].function(data)) {
                         var message = {
