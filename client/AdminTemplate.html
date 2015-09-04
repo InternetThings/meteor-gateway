@@ -9,17 +9,17 @@
     </form>
     <br>
     <table>
-    <tr>
-    {{#each sensors}}
-        <td>
-            <div class="sensorBox">
-                <p>Location: {{location}}</p>
-                <p>Type: {{type}}</p>
-                <p><input type="checkbox" class="sensorCheckbox" checked="checked"></p>
-            </div>
-        </td>
-    {{/each}}
-    </tr>
+        <tr>
+        {{#each sensors}}
+            <td>
+                <div class="sensorBox">
+                    <p>Location: {{location}}</p>
+                    <p>Type: {{type}}</p>
+                    <p><input type="checkbox" class="sensorCheckbox"></p>
+                </div>
+            </td>
+        {{/each}}
+        </tr>
     </table>
     <br>
     <form>

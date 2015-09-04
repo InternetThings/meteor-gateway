@@ -1,6 +1,7 @@
 /**
  * Created by Niels on 25/08/15.
  */
+
 Meteor.startup(function() {
     //No particular setup on startup
 });
@@ -120,7 +121,7 @@ Meteor.methods({
             for (var i = 0; i < 99; i++) {
                 dataArray.push({date: undefined, sensorId: undefined, data: undefined});
             }
-            SensorData.insert({start: data.date, end: undefined, currentIndex: 0, data: dataArray});
+            SensorData.insert({start: data.date, end: undefined, currentIndex: 1, data: dataArray});
         }
     }
 });

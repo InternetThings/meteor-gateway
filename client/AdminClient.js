@@ -55,13 +55,8 @@ Template.login.helpers({
 Template.admin.onCreated(function() {
     var instance = this;
 
-    instance.subscribe('sensors', function() {
-        var array = [];
-        Sensors.find({}).map(function(sensor) {
-            array.push(sensor._id);
-        });
-        Session.set('checkedSensors', array);
-    });
+    instance.subscribe('sensors');
+    Session.set('checkedSensors', []);
     Session.setDefault('selected', 'Temperature');
     Session.setDefault('fromDate', new Date(0));
     Session.setDefault('toDate', undefined);
@@ -72,7 +67,7 @@ Template.admin.onCreated(function() {
 
 Template.admin.events({
     'click .logout':function() {
-       Meteor.logout();
+        Meteor.logout();
     },
 
     'submit .addSensor':function(event) {
