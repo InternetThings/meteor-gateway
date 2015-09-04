@@ -101,6 +101,7 @@ Meteor.methods({
     },
 
     //Temporary function for adding data to sensor, will be removed for final product
+    //Data is an object with the schema {date:Date, sensorId:String, data:Number}
     addData:function(data) {
         var currentData = SensorData.findOne({end: undefined});
         if (currentData !== undefined) {
