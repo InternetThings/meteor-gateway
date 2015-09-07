@@ -36,6 +36,10 @@ var settings = {
 //Instantiating server
 var server = new mosca.Server(settings);
 
+var authorizePublish = function(client, topic, payload, callback) {
+    callback(null, client === null);
+};
+
 //Check if topic match the pattern and create topic function if needed
 server.on('subscribed', Meteor.bindEnvironment(function(topic, client) {
     console.log('Subscribed', topic);
@@ -79,6 +83,7 @@ server.on('unsubscribed', function(topic ,client) {
 server.on('ready', setup);
 
 function setup() {
+    server.authorizePublish = authorizePublish;
     console.log('Mosca is up and running');
 }
 
@@ -215,7 +220,7 @@ function parseTopic(topic) {
 function startObserver() {
     //Initializing variable, makes sure initial load is not published
     var initializing = true;
-    observer = SensorData.find({}, {fields:{_id:0, currentIndex:1, data:1}}).observeChanges({
+    observer = SensorData.find({}, {fields:{currentIndex:1, data:1}}).observeChanges({
         added: function (id, fields) {
             if(!initializing) {
                 if(Topics.length === 0) {

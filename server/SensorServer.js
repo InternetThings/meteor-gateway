@@ -1,9 +1,8 @@
 /**
  * Created by Niels on 25/08/15.
  */
-
 Meteor.startup(function() {
-    //No particular setup on startup
+    //Do nothing on startup
 });
 
 //Publish the sensors collection to all logged in users
@@ -101,8 +100,10 @@ Meteor.methods({
     },
 
     //Temporary function for adding data to sensor, will be removed for final product
-    //Data is an object with the schema {date:Date, sensorId:String, data:Number}
+    //Data is an object with the schema {date:Date, sensorId:String, data:Data}
     addData:function(data) {
+        check(data.date, Date);
+        check(data.sensorId, String);
         var currentData = SensorData.findOne({end: undefined});
         if (currentData !== undefined) {
             //Append the current data
