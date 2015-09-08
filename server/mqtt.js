@@ -36,31 +36,43 @@ var settings = {
 //Instantiating server
 var server = new mosca.Server(settings);
 
+//Authorization method to make sure only the server can publish
 var authorizePublish = function(client, topic, payload, callback) {
     callback(null, client === null);
 };
 
+//Authorization method to make sure there are only subscribers on correctly formatted topics
+var authorizeSubscribe = function(client, topic, callback) {
+    var match = topic.match(pattern);
+    callback(null, (match !== null && match[0] === topic));
+};
+
+server.on('clientConnected', function(client) {
+   console.log("Connected");
+});
+
+server.on('clientDisconnected', function(client) {
+    console.log("Disconnected")
+});
+
 //Check if topic match the pattern and create topic function if needed
 server.on('subscribed', Meteor.bindEnvironment(function(topic, client) {
     console.log('Subscribed', topic);
-    var match = topic.match(pattern);
     var index = topicIndex(topic);
-    if(match !== null && match[0] === topic) {
-        if(index.outer === -1) {
-            Topics.push({versions: [{topic:topic, subscribers:1}], regex: topicRegex(topic), function: parseTopic(topic)});
-            console.log('Topic created');
-            //Start observer if it's not running
-            if (observer === undefined) {
-                startObserver();
-                console.log('Observer started');
-            }
+    if(index.outer === -1) {
+        Topics.push({versions: [{topic:topic, subscribers:1}], regex: topicRegex(topic), function: parseTopic(topic)});
+        console.log('Topic created');
+        //Start observer if it's not running
+        if (observer === undefined) {
+            startObserver();
+            console.log('Observer started');
         }
-        else if(index.inner === -1) {
-            Topics[index.outer].versions.push({topic:topic, subscribers:1});
-        }
-        else {
-            Topics[index.outer].versions[index.inner].subscribers++;
-        }
+    }
+    else if(index.inner === -1) {
+        Topics[index.outer].versions.push({topic:topic, subscribers:1});
+    }
+    else {
+        Topics[index.outer].versions[index.inner].subscribers++;
     }
 }));
 
@@ -84,6 +96,7 @@ server.on('ready', setup);
 
 function setup() {
     server.authorizePublish = authorizePublish;
+    server.authorizeSubscribe = authorizeSubscribe;
     console.log('Mosca is up and running');
 }
 
@@ -124,18 +137,20 @@ function topicRegex(topic) {
     var regex = 'sensors:\\[';
     var values = topic.match(vals);
     var sensorsNames = values[0].match(strings);
-    for(var i = 0; i < sensorsNames.length; i++) {
-        if(i !== 0) {
-            regex += ', ';
-        }
-        regex += '(';
-        for(var j = 0; j < sensorsNames.length; j++) {
-            if(j !== 0) {
-                regex += '|';
+    if(sensorsNames !== null) {
+        for (var i = 0; i < sensorsNames.length; i++) {
+            if (i !== 0) {
+                regex += ', ';
             }
-            regex += sensorsNames[j];
+            regex += '(';
+            for (var j = 0; j < sensorsNames.length; j++) {
+                if (j !== 0) {
+                    regex += '|';
+                }
+                regex += sensorsNames[j];
+            }
+            regex += ')';
         }
-        regex += ')';
     }
     regex += ']';
     if(values.length > 1) {
