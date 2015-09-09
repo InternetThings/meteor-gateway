@@ -36,6 +36,19 @@ var settings = {
 //Instantiating server
 var server = new mosca.Server(settings);
 
+var authenticate = Meteor.bindEnvironment(function(client, username, password, callback) {
+    var matchingUser = Meteor.users.find({username:username});
+    if(matchingUser.count() > 0) {
+        var check = Accounts._checkPassword(matchingUser.fetch()[0], password.toString('utf8'));
+        if (check.error) {
+            callback(check.error);
+        }
+        else {
+            callback(null, true);
+        }
+    }
+});
+
 //Authorization method to make sure only the server can publish
 var authorizePublish = function(client, topic, payload, callback) {
     callback(null, client === null);
@@ -95,6 +108,7 @@ server.on('unsubscribed', function(topic ,client) {
 server.on('ready', setup);
 
 function setup() {
+    server.authenticate = authenticate;
     server.authorizePublish = authorizePublish;
     server.authorizeSubscribe = authorizeSubscribe;
     console.log('Mosca is up and running');
